@@ -28,8 +28,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-DEBUG = os.getenv("DEBUG") == "True"
+SECRET_KEY = os.getenv("SECRET_KEY","fallback-secret")
+DEBUG = os.getenv("DEBUG","False") == "True"
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
