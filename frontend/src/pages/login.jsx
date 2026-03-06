@@ -38,6 +38,7 @@ export default function Login() {
       });
       
       localStorage.setItem("token", response.data.access);
+      alert("Login successful!");
       navigate("/");
     } catch (err) {
       console.error("Login failed:", err);
