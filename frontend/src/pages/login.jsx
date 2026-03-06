@@ -32,12 +32,12 @@ export default function Login() {
     setError("");
 
     try {
-      const response = await api.post("login/", {
+      const response = await api.post("accounts/login/", {
         email: formData.email,
         password: formData.password
       });
       
-      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("token", response.data.access);
       navigate("/");
     } catch (err) {
       console.error("Login failed:", err);
