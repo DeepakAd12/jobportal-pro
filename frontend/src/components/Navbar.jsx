@@ -34,6 +34,7 @@ export default function Navbar() {
         <div className={`navbar-links ${mobileOpen ? 'mobile-open' : ''}`}>
           <Link to="/" className="navbar-link">Jobs</Link>
           <Link to="/login" className="navbar-link">Login</Link>
+          <Link to="/register" className="navbar-link">Register</Link>
         </div>
       </div>
     </nav>
