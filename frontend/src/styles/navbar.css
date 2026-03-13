@@ -74,6 +74,10 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
+.logout-btn:hover {
+  background-color: #d32f2f;
+}
+
 /* Mobile Menu Button */
 .navbar-mobile-toggle {
   display: none;

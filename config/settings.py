@@ -165,3 +165,14 @@ CORS_ALLOWED_ORIGINS = [
     "https://jobportal-pro-git-main-deepakad12s-projects.vercel.app",
 ]
 CORS_ALLOW_ALL_ORIGINS = True
+
+SWAGGER_SETTINGS = {
+    "USE_SESSION_AUTH": False,
+    "SECURITY_DEFINITIONS": {   
+        "Bearer": {
+            "type": "apiKey",   
+            "name": "Authorization",
+            "in": "header"  
+        }
+    },  
+}

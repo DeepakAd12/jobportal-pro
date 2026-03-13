@@ -3,7 +3,15 @@ import { Link } from "react-router-dom";
 import "../styles/navbar.css";
 
 export default function Navbar() {
+  const token = localStorage.getItem("token");
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleLogout = () => {
+    if (window.confirm("Are you sure you want to logout?")) {
+      localStorage.removeItem("token");
+      window.location.href = "/";
+    }
+  };
 
   return (
     <nav className="navbar">
@@ -33,8 +41,16 @@ export default function Navbar() {
 
         <div className={`navbar-links ${mobileOpen ? 'mobile-open' : ''}`}>
           <Link to="/" className="navbar-link">Jobs</Link>
-          <Link to="/login" className="navbar-link">Login</Link>
-          <Link to="/register" className="navbar-link">Register</Link>
+          {token ? (
+            <button onClick={handleLogout} className="navbar-link logout-btn">
+              Logout
+            </button>
+          ) : (
+            <>
+              <Link to="/login" className="navbar-link">Login</Link>
+              <Link to="/register" className="navbar-link">Register</Link>
+            </>
+          )}
         </div>
       </div>
     </nav>
