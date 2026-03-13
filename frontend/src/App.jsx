@@ -3,6 +3,8 @@ import Login from "./pages/login";
 import Jobs from "./pages/jobs";
 import Navbar from "./components/Navbar";
 import Register from "./pages/Register";
+import Home from "./components/Home";
+import JobDetails from "./components/JobDetails";
 
 function App() {
   return (
@@ -10,9 +12,11 @@ function App() {
       <Navbar />
       <main>
         <Routes>
-          <Route path="/register" element={<Register />} />
-          <Route path="/" element={<Jobs />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/jobs" element={<Jobs />} />
+          <Route path="/job/:id" element={<JobDetails />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </main>
     </BrowserRouter>

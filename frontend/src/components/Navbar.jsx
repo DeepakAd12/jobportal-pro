@@ -40,7 +40,8 @@ export default function Navbar() {
         </button>
 
         <div className={`navbar-links ${mobileOpen ? 'mobile-open' : ''}`}>
-          <Link to="/" className="navbar-link">Jobs</Link>
+          <Link to="/" className="navbar-link">Home</Link>
+          <Link to="/jobs" className="navbar-link">Jobs</Link>
           {token ? (
             <button onClick={handleLogout} className="navbar-link logout-btn">
               Logout

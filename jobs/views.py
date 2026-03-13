@@ -1,3 +1,4 @@
+from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from .models import Job
@@ -6,11 +7,9 @@ from .permission import IsRecruiter
 
 
 class JobViewSet(ModelViewSet):
-
+    queryset = Job.objects.all()
     serializer_class = JobSerializer
-
-    permission_classes = [IsAuthenticated, IsRecruiter]
-
+    permission_classes = [AllowAny]
     def get_queryset(self):
 
         queryset = Job.objects.all()
