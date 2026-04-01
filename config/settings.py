@@ -59,7 +59,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -164,10 +163,10 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
 
 CORS_ALLOWED_ORIGINS = [
-    "https://jobportal-pro-git-main-deepakad12s-projects.vercel.app",
+    "https://jobportal-pro.vercel.app",
 ]
 CORS_ALLOW_ALL_ORIGINS = True
-
+CORS_ALLOW_CREDENTIALS = True
 SWAGGER_SETTINGS = {
     "USE_SESSION_AUTH": False,
     "SECURITY_DEFINITIONS": {   
