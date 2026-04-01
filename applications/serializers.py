@@ -18,4 +18,5 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Application
-        fields = ['id', 'job', 'job_id', 'applied_at']
+        fields = '_all__'
+        read_only_fields = ['id', 'user', 'applied_at', 'status']

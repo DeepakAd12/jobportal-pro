@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from applications.validators import validate_resume
 from jobs.models import Job
 
 User = settings.AUTH_USER_MODEL
@@ -11,3 +12,22 @@ class Application(models.Model):
     applied_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f"{self.user} applied to {self.job}"
+    class Meta:
+     unique_together = ['user', 'job']
+
+resume = models.FileField(
+    upload_to='resumes/',
+    null=True,
+    blank=True,
+    validators=[validate_resume]
+)
+
+status = models.CharField(
+    max_length=20,
+    choices=[
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('rejected', 'Rejected'),
+    ],
+    default='pending'
+)

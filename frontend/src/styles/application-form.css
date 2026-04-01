@@ -1,0 +1,400 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.modal-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-close svg {
+  width: 24px;
+  height: 24px;
+}
+
+.application-form {
+  padding: 0;
+  max-height: calc(90vh - 80px);
+  overflow-y: auto;
+}
+
+.form-section {
+  padding: 2rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.form-section:last-child {
+  border-bottom: none;
+}
+
+.form-section h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.form-section h3::before {
+  content: '';
+  width: 4px;
+  height: 20px;
+  background: #3b82f6;
+  border-radius: 2px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+  justify-content: flex-end;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: #64748b;
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #475569;
+  transform: translateY(-2px);
+}
+
+/* File Input Styling */
+.file-input-wrapper {
+  position: relative;
+}
+
+.file-input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.file-input-label {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border: 2px dashed #e5e7eb;
+  border-radius: 8px;
+  background: #fafafa;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 50px;
+}
+
+.file-input-label:hover {
+  border-color: #3b82f6;
+  background: #f0f9ff;
+  color: #1f2937;
+}
+
+.file-input-label svg {
+  width: 20px;
+  height: 20px;
+  color: #9ca3af;
+  transition: color 0.2s ease;
+}
+
+.file-input-label:hover svg {
+  color: #3b82f6;
+}
+
+.file-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #f3f4f6;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.file-name {
+  font-size: 0.875rem;
+  color: #374151;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 300px;
+}
+
+.file-size {
+  font-size: 0.75rem;
+  color: #6b7280;
+  background: #e5e7eb;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+}
+
+/* Job Summary */
+.job-summary {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.job-summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.job-summary-item:last-child {
+  border-bottom: none;
+}
+
+.summary-label {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summary-value {
+  font-size: 1rem;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+/* Loading Spinner */
+.submit-spinner {
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+.submit-spinner circle,
+.submit-spinner path {
+  fill: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 1rem;
+  }
+  
+  .modal-content {
+    max-height: 95vh;
+  }
+  
+  .modal-header {
+    padding: 1.25rem 1.5rem;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.25rem;
+  }
+  
+  .form-section {
+    padding: 1.5rem 1.5rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    padding: 1rem 1.5rem;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+  
+  .file-name {
+    max-width: 200px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .modal-content {
+    background: #1f2937;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+  
+  .modal-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  }
+  
+  .modal-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .form-section {
+    border-bottom-color: #374151;
+  }
+  
+  .form-section h3 {
+    color: #f9fafb;
+  }
+  
+  .form-actions {
+    background: #111827;
+    border-top-color: #374151;
+  }
+  
+  .file-input-label {
+    background: #111827;
+    border-color: #374151;
+    color: #9ca3af;
+  }
+  
+  .file-input-label:hover {
+    background: #0b1220;
+    border-color: #60a5fa;
+    color: #e5e7eb;
+  }
+  
+  .file-input-label svg {
+    color: #9ca3af;
+  }
+  
+  .file-input-label:hover svg {
+    color: #60a5fa;
+  }
+  
+  .file-preview {
+    background: #111827;
+    border-color: #374151;
+  }
+  
+  .file-name {
+    color: #e5e7eb;
+  }
+  
+  .job-summary {
+    background: #111827;
+    border-color: #374151;
+  }
+  
+  .job-summary-item {
+    border-bottom-color: #374151;
+  }
+  
+  .summary-label {
+    color: #9ca3af;
+  }
+  
+  .summary-value {
+    color: #f9fafb;
+  }
+}

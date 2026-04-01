@@ -1,15 +1,33 @@
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
+
+
+from rest_framework import serializers
+
+from utils.response import success_response
 from .models import Job
 from .serializers import JobSerializer
 from .permission import IsRecruiter
+from .pagination import JobPagination
+from .models import Bookmark
+from .serializers import BookmarkSerializer
 
 
 class JobViewSet(ModelViewSet):
     queryset = Job.objects.all()
     serializer_class = JobSerializer
     permission_classes = [AllowAny]
+    pagination_class = JobPagination
+
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['location', 'salary']
+    search_fields = ['title', 'description']
+
+
     def get_queryset(self):
 
         queryset = Job.objects.all()
@@ -36,3 +54,23 @@ class JobViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+
+class BookmarkViewSet(ModelViewSet):
+    queryset = Bookmark.objects.all()
+    serializer_class = BookmarkSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Bookmark.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        job = serializer.validated_data.get('job')
+
+        if Bookmark.objects.filter(user=user, job=job).exists():
+            raise serializers.ValidationError("Already bookmarked")
+
+        serializer.save(user=user)
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        return success_response(response.data, "Job bookmarked successfully") 

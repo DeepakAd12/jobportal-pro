@@ -1,15 +1,21 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useToast } from "./ToastContainer";
+import ApplicationForm from "./ApplicationForm";
+import LoadingSpinner from "./LoadingSpinner";
+import EmptyState from "./EmptyState";
 import api from "../api";
 import "../styles/job-details.css";
 
 export default function JobDetails() {
   const { id } = useParams();
+  const { showToast } = useToast();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isApplying, setIsApplying] = useState(false);
+  const [isApplying, setisApplying] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [showApplicationForm, setShowApplicationForm] = useState(false);
 
   useEffect(() => {
     const fetchJob = () => {
@@ -31,38 +37,43 @@ export default function JobDetails() {
     fetchJob();
   }, [id]);
 
-  const handleApply = async () => {
+  const handleApply = () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login to apply for this job");
+      showToast("Please login to apply for this job", "warning");
       return;
     }
+    setShowApplicationForm(true);
+  };
 
-    setIsApplying(true);
+  const handleApplicationSubmit = async (formData) => {
     try {
-      await api.post(`applications/`, { job: id });
-      alert("Application submitted successfully!");
+      await api.post(`applications/`, formData);
+      showToast("Application submitted successfully!", "success");
+      setShowApplicationForm(false);
     } catch (err) {
       console.error("Failed to apply:", err);
-      alert("Failed to submit application. Please try again.");
-    } finally {
-      setIsApplying(false);
+      if (err.response?.data?.non_field_errors) {
+        showToast(err.response.data.non_field_errors[0], "error");
+      } else {
+        showToast("Failed to submit application. Please try again.", "error");
+      }
     }
   };
 
   const handleSave = () => {
     setIsSaved(!isSaved);
-    // TODO: Implement save job functionality
-    alert(isSaved ? "Job removed from saved" : "Job saved successfully");
+    showToast(isSaved ? "Job removed from saved" : "Job saved successfully", "info");
   };
 
   if (loading) {
     return (
       <div className="job-details-page">
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <span className="loading-text">Loading job details...</span>
-        </div>
+        <LoadingSpinner 
+          size="large" 
+          text="Loading job details..." 
+          fullScreen={false} 
+        />
       </div>
     );
   }
@@ -70,15 +81,15 @@ export default function JobDetails() {
   if (error) {
     return (
       <div className="job-details-page">
-        <div className="error-container">
-          <div className="error-message">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0Zm-9 3.75h.008v.008H12v-.008Z" />
-            </svg>
-            <p>{error}</p>
-          </div>
-          <Link to="/jobs" className="btn btn-primary">Back to Jobs</Link>
-        </div>
+        <EmptyState
+          title="Unable to Load Job Details"
+          description={error}
+          primaryAction={{
+            label: "Back to Jobs",
+            to: "/jobs"
+          }}
+          size="large"
+        />
       </div>
     );
   }
@@ -86,16 +97,20 @@ export default function JobDetails() {
   if (!job) {
     return (
       <div className="job-details-page">
-        <div className="error-container">
-          <div className="not-found-message">
+        <EmptyState
+          title="Job Not Found"
+          description="The job you're looking for doesn't exist or has been removed."
+          primaryAction={{
+            label: "Back to Jobs",
+            to: "/jobs"
+          }}
+          icon={
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
             </svg>
-            <h3>Job Not Found</h3>
-            <p>The job you're looking for doesn't exist or has been removed.</p>
-          </div>
-          <Link to="/jobs" className="btn btn-primary">Back to Jobs</Link>
-        </div>
+          }
+          size="large"
+        />
       </div>
     );
   }
@@ -183,6 +198,13 @@ export default function JobDetails() {
               </div>
             </div>
           </div>
+
+          <ApplicationForm
+            job={job}
+            isOpen={showApplicationForm}
+            onClose={() => setShowApplicationForm(false)}
+            onApply={handleApplicationSubmit}
+          />
 
           <div className="job-details-sidebar">
             <div className="job-summary">
