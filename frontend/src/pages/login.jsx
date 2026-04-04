@@ -15,7 +15,6 @@ export default function Login() {
     values,
     errors,
     touched,
-    isValid,
     handleChange,
     handleBlur,
     validateForm
@@ -45,6 +44,8 @@ export default function Login() {
       
       localStorage.setItem("token", response.data.access);
       showToast("Login successful!", "success");
+      // Dispatch custom event to notify other components
+      window.dispatchEvent(new Event("auth-change"));
       navigate("/");
     } catch (err) {
       console.error("Login failed:", err);
@@ -98,7 +99,7 @@ export default function Login() {
           />
         </div>
         
-        <button type="submit" disabled={loading || !isValid}>
+        <button type="submit" disabled={loading}>
           {loading ? (
             <>
               <svg className="submit-spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

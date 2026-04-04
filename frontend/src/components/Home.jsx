@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../api";
 import "../styles/home.css";
 
 export default function Home() {
+  const navigate = useNavigate();
   const [featuredJobs, setFeaturedJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -30,7 +31,7 @@ export default function Home() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      window.location.href = `/jobs?search=${encodeURIComponent(searchQuery)}`;
+      navigate(`/jobs?search=${encodeURIComponent(searchQuery)}`);
     }
   };
 
@@ -39,7 +40,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-content">
-          <h1>Find Your Dream Job Today</h1>
+          <h1>Find Your Dream Job</h1>
           <p className="hero-subtitle">
             Discover thousands of job opportunities from top companies around the world
           </p>
@@ -107,7 +108,7 @@ export default function Home() {
                   <div className="job-card-header">
                     <h3>{job.title}</h3>
                   </div>
-                  <p className="job-company">{job.company || "Company Name"}</p>
+                  <p className="job-company">{job.created_by?.username || job.created_by?.email || "Company Name"}</p>
                   
                   <div className="job-details">
                     <span className="job-detail">

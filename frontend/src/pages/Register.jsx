@@ -15,7 +15,6 @@ export default function Register() {
     values,
     errors,
     touched,
-    isValid,
     handleChange,
     handleBlur,
     validateForm
@@ -140,7 +139,7 @@ export default function Register() {
           )}
         </div>
 
-        <button type="submit" disabled={loading || !isValid}>
+        <button type="submit" disabled={loading}>
           {loading ? (
             <>
               <svg className="submit-spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

@@ -177,7 +177,7 @@ const JobSeekerDashboard = () => {
                           {getStatusText(application.status)}
                         </span>
                         <span className="applied-date">
-                          Applied on {new Date(application.applied_at).toLocaleDateString()}
+                          Applied on {application.applied_at ? new Date(application.applied_at).toLocaleDateString() : 'N/A'}
                         </span>
                       </div>
                     </div>

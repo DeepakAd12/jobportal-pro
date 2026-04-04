@@ -35,19 +35,29 @@ export const useFormValidation = (initialState = {}, validationRules = {}) => {
   }, [values, validateField, validationRules]);
 
   const handleChange = useCallback((name, value) => {
-    setValues(prev => ({ ...prev, [name]: value }));
-    
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: null }));
-    }
-    
-    // Validate field in real-time
+  setValues(prev => {
+    const updatedValues = { ...prev, [name]: value };
+
+    // validate field
     const error = validateField(name, value);
-    if (error) {
-      setErrors(prev => ({ ...prev, [name]: error }));
-    }
-  }, [errors, validateField]);
+
+    setErrors(prevErrors => ({
+      ...prevErrors,
+      [name]: error
+    }));
+
+    // validate full form
+    let formIsValid = true;
+    Object.keys(validationRules).forEach(field => {
+      const err = validateField(field, updatedValues[field]);
+      if (err) formIsValid = false;
+    });
+
+    setIsValid(formIsValid);
+
+    return updatedValues;
+  });
+}, [validateField, validationRules]);
 
   const handleBlur = useCallback((name) => {
     setTouched(prev => ({ ...prev, [name]: true }));
@@ -132,7 +142,7 @@ export const validationRules = {
   phone: (message = "Please enter a valid phone number") => (value) => {
     if (!value) return null;
     
-    const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
+    const phoneRegex = /^\+?[\d\s\-()]{10,}$/;
     if (!phoneRegex.test(value)) {
       return message;
     }

@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ToastProvider } from "./components/ToastContainer";
 import ErrorBoundary from "./components/ErrorBoundary";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/login";
 import Jobs from "./pages/jobs";
 import Navbar from "./components/Navbar";
@@ -23,7 +24,11 @@ function App() {
               <Route path="/job/:id" element={<JobDetails />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/dashboard" element={<JobSeekerDashboard />} />
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <JobSeekerDashboard />
+                </ProtectedRoute>
+              } />
             </Routes>
           </main>
         </BrowserRouter>

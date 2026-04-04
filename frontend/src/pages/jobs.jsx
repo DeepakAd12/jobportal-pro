@@ -18,53 +18,69 @@ export default function Jobs() {
     salary: searchParams.get('salary') || ''
   });
 
-  useEffect(() => {
-    const fetchJobs = () => {
-      setLoading(true);
-      setError(null);
-      api.get("jobs/")
-        .then(res => {
-          if (res.data.results) {
-            setJobs(res.data.results);
-          } else {
-            setJobs(res.data);
-          }
-        })
-        .catch(err => {
-          console.error("Failed to fetch jobs:", err);
-          setError("Failed to load jobs. Please try again later.");
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    };
+ useEffect(() => {
+  const fetchJobs = () => {
+    setLoading(true);
+    setError(null);
 
-    fetchJobs();
-  }, []);
+    api.get("jobs/")
+      .then(res => {
+        console.log("FULL RESPONSE:", res.data);
+
+        const jobsData = res.data?.results || res.data || [];
+
+        console.log("EXTRACTED JOBS:", jobsData);
+
+        setJobs(jobsData);
+      })
+      .catch(err => {
+        console.error("ERROR:", err);
+        setError("Failed to load jobs");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  fetchJobs();
+}, []);
 
   // Apply filters
-  const filteredJobs = useMemo(() => {
-    return jobs.filter(job => {
-      const searchLower = filters.search.toLowerCase();
-      const matchesSearch = !searchLower || 
-        job.title.toLowerCase().includes(searchLower) ||
-        (job.company && job.company.toLowerCase().includes(searchLower)) ||
-        (job.description && job.description.toLowerCase().includes(searchLower));
+const filteredJobs = useMemo(() => {
+  return jobs.filter(job => {
+    const searchLower = (filters.search || "").toLowerCase();
 
-      const matchesLocation = !filters.location || 
-        (job.location && job.location.toLowerCase().includes(filters.location.toLowerCase()));
+    const matchesSearch =
+      !searchLower ||
+      (job.title && job.title.toLowerCase().includes(searchLower)) ||
+      (job.description && job.description.toLowerCase().includes(searchLower)) ||
+      (job.created_by?.username && job.created_by.username.toLowerCase().includes(searchLower));
 
-      const matchesJobType = !filters.jobType || job.job_type === filters.jobType;
+    const matchesLocation =
+      !filters.location ||
+      (job.location && job.location.toLowerCase().includes(filters.location.toLowerCase()));
 
-      const matchesExperience = !filters.experience || 
-        (job.experience && job.experience.toLowerCase().includes(filters.experience.toLowerCase()));
+    const matchesJobType =
+      !filters.jobType ||
+      (job.job_type && job.job_type === filters.jobType);
 
-      const matchesSalary = !filters.salary || 
-        (job.salary && Number(job.salary) >= Number(filters.salary));
+    const matchesExperience =
+      !filters.experience ||
+      (job.experience && job.experience.toLowerCase().includes(filters.experience.toLowerCase()));
 
-      return matchesSearch && matchesLocation && matchesJobType && matchesExperience && matchesSalary;
-    });
-  }, [jobs, filters]);
+    const matchesSalary =
+      !filters.salary ||
+      (job.salary && Number(job.salary) >= Number(filters.salary));
+
+    return (
+      matchesSearch &&
+      matchesLocation &&
+      matchesJobType &&
+      matchesExperience &&
+      matchesSalary
+    );
+  });
+}, [jobs, filters]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -251,7 +267,7 @@ export default function Jobs() {
                   {job.job_type || "Full-time"}
                 </span>
               </div>
-              <p className="job-company">{job.company || "Company Name"}</p>
+              <p className="job-company">{job.created_by?.username || job.created_by?.email || "Company Name"}</p>
               
               <div className="job-details">
                 <span className="job-detail">
@@ -285,13 +301,16 @@ export default function Jobs() {
                 <p className="job-description">{job.description}</p>
               )}
 
-              {job.skills && job.skills.length > 0 && (
-                <div className="job-skills">
-                  {job.skills.slice(0, 4).map((skill, index) => (
-                    <span key={index} className="skill-tag">{skill}</span>
-                  ))}
-                </div>
-              )}
+              {(() => {
+                const skills = typeof job.skills === 'string' ? JSON.parse(job.skills) : (Array.isArray(job.skills) ? job.skills : []);
+                return skills.length > 0 && (
+                  <div className="job-skills">
+                    {skills.slice(0, 4).map((skill, index) => (
+                      <span key={index} className="skill-tag">{skill}</span>
+                    ))}
+                  </div>
+                );
+              })()}
 
               <div className="job-actions">
                 <Link to={`/job/${job.id}`} className="btn btn-primary">View Details</Link>

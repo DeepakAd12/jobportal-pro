@@ -1,15 +1,40 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/navbar.css";
 
 export default function Navbar() {
-  const token = localStorage.getItem("token");
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
   const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check auth status on mount and when storage changes
+    const checkAuth = () => {
+      setIsLoggedIn(!!localStorage.getItem("token"));
+    };
+    
+    checkAuth();
+    
+    // Listen for storage events (for cross-tab sync)
+    window.addEventListener("storage", checkAuth);
+    
+    // Custom event for same-tab auth changes
+    window.addEventListener("auth-change", checkAuth);
+    
+    return () => {
+      window.removeEventListener("storage", checkAuth);
+      window.removeEventListener("auth-change", checkAuth);
+    };
+  }, []);
 
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
       localStorage.removeItem("token");
-      window.location.href = "/";
+      localStorage.removeItem("user");
+      setIsLoggedIn(false);
+      // Dispatch custom event to notify other components
+      window.dispatchEvent(new Event("auth-change"));
+      navigate("/");
     }
   };
 
@@ -42,10 +67,13 @@ export default function Navbar() {
         <div className={`navbar-links ${mobileOpen ? 'mobile-open' : ''}`}>
           <Link to="/" className="navbar-link">Home</Link>
           <Link to="/jobs" className="navbar-link">Jobs</Link>
-          {token ? (
-            <button onClick={handleLogout} className="navbar-link logout-btn">
-              Logout
-            </button>
+          {isLoggedIn ? (
+            <>
+              <Link to="/dashboard" className="navbar-link">Dashboard</Link>
+              <button onClick={handleLogout} className="navbar-link logout-btn">
+                Logout
+              </button>
+            </>
           ) : (
             <>
               <Link to="/login" className="navbar-link">Login</Link>

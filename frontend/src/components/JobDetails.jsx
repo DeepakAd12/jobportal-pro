@@ -13,15 +13,16 @@ export default function JobDetails() {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isApplying, setisApplying] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [showApplicationForm, setShowApplicationForm] = useState(false);
+  const [isApplying, setIsApplying] = useState(false);
 
   useEffect(() => {
     const fetchJob = () => {
       setLoading(true);
       setError(null);
       api.get(`jobs/${id}/`)
+      // Debug log
         .then(res => {
           setJob(res.data);
         })
@@ -47,6 +48,7 @@ export default function JobDetails() {
   };
 
   const handleApplicationSubmit = async (formData) => {
+    setIsApplying(true);
     try {
       await api.post(`applications/`, formData);
       showToast("Application submitted successfully!", "success");
@@ -58,6 +60,8 @@ export default function JobDetails() {
       } else {
         showToast("Failed to submit application. Please try again.", "error");
       }
+    } finally {
+      setIsApplying(false);
     }
   };
 
@@ -153,9 +157,8 @@ export default function JobDetails() {
                   <button 
                     onClick={handleApply} 
                     className="btn btn-primary"
-                    disabled={isApplying}
                   >
-                    {isApplying ? 'Applying...' : 'Apply Now'}
+                    Apply Now
                   </button>
                 </div>
               </div>
@@ -168,7 +171,7 @@ export default function JobDetails() {
                     </svg>
                   </div>
                   <div className="company-details">
-                    <h3>{job.company || "Company Name"}</h3>
+                    <h3>{job.created_by?.username || job.created_by?.email || "Company Name"}</h3>
                     <p className="company-location">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -252,16 +255,19 @@ export default function JobDetails() {
               </div>
             </div>
 
-            {job.skills && job.skills.length > 0 && (
-              <div className="job-skills-sidebar">
-                <h3>Required Skills</h3>
-                <div className="skills-list">
-                  {job.skills.map((skill, index) => (
-                    <span key={index} className="skill-tag">{skill}</span>
-                  ))}
+            {(() => {
+              const skills = typeof job.skills === 'string' ? JSON.parse(job.skills) : (Array.isArray(job.skills) ? job.skills : []);
+              return skills.length > 0 && (
+                <div className="job-skills-sidebar">
+                  <h3>Required Skills</h3>
+                  <div className="skills-list">
+                    {skills.slice(0, 10).map((skill, index) => (
+                      <span key={index} className="skill-tag">{skill}</span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         </div>
 
