@@ -53,7 +53,10 @@ class JobViewSet(ModelViewSet):
 
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
+        if self.request.user.is_authenticated:
+            serializer.save(created_by=self.request.user)
+        else:
+            serializer.save()
 
 class BookmarkViewSet(ModelViewSet):
     queryset = Bookmark.objects.all()
