@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import { useToast } from "./ToastContainer";
 import api from "../api";
-import { formatSalary, getCompanyName } from "../utils/jobUtils";
 import "../styles/job-seeker-dashboard.css";
 
 const JobSeekerDashboard = () => {
   const { showToast } = useToast();
-  const [activeTab, setActiveTab] = useState("applied");
+  const [activeTab, setActiveTab] = useState('applied');
   const [jobs, setJobs] = useState([]);
   const [savedJobs, setSavedJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,15 +15,15 @@ const JobSeekerDashboard = () => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
-
+      
       try {
-        const [appliedResponse, savedResponse] = await Promise.all([
-          api.get("applications/"),
-          api.get("jobs/bookmarks/")
-        ]);
-
-        setJobs(appliedResponse.data?.results || appliedResponse.data || []);
-        setSavedJobs(savedResponse.data?.results || savedResponse.data || []);
+        // Fetch applied jobs
+        const appliedResponse = await api.get('applications/');
+        setJobs(appliedResponse.data || []);
+        
+        // Fetch saved jobs (for now, we'll use a mock implementation)
+        // In a real app, this would be a separate endpoint
+        setSavedJobs([]);
       } catch (err) {
         console.error("Failed to fetch dashboard data:", err);
         setError("Failed to load dashboard data. Please try again later.");
@@ -38,21 +36,15 @@ const JobSeekerDashboard = () => {
     fetchData();
   }, [showToast]);
 
-  const handleUnsaveJob = async (bookmarkId) => {
-    try {
-      await api.delete(`jobs/bookmarks/${bookmarkId}/`);
-      setSavedJobs((prev) => prev.filter((bookmark) => bookmark.id !== bookmarkId));
-      showToast("Job removed from saved", "info");
-    } catch (err) {
-      console.error("Failed to remove saved job:", err);
-      showToast("Failed to remove saved job", "error");
-    }
+  const handleUnsaveJob = (jobId) => {
+    setSavedJobs(prev => prev.filter(job => job.id !== jobId));
+    showToast("Job removed from saved", "info");
   };
 
   const handleDeleteApplication = async (applicationId) => {
     try {
       await api.delete(`applications/${applicationId}/`);
-      setJobs((prev) => prev.filter((app) => app.id !== applicationId));
+      setJobs(prev => prev.filter(app => app.id !== applicationId));
       showToast("Application deleted successfully", "success");
     } catch (err) {
       console.error("Failed to delete application:", err);
@@ -62,23 +54,19 @@ const JobSeekerDashboard = () => {
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
-      case "accepted":
-        return "#10b981";
-      case "rejected":
-        return "#ef4444";
-      default:
-        return "#6b7280";
+      case 'accepted': return '#10b981';
+      case 'rejected': return '#ef4444';
+      case 'reviewed': return '#f59e0b';
+      default: return '#6b7280';
     }
   };
 
   const getStatusText = (status) => {
     switch (status?.toLowerCase()) {
-      case "accepted":
-        return "Accepted";
-      case "rejected":
-        return "Rejected";
-      default:
-        return "Pending";
+      case 'accepted': return 'Accepted';
+      case 'rejected': return 'Rejected';
+      case 'reviewed': return 'Under Review';
+      default: return 'Applied';
     }
   };
 
@@ -124,22 +112,22 @@ const JobSeekerDashboard = () => {
       </div>
 
       <div className="dashboard-tabs">
-        <button
-          className={`tab-button ${activeTab === "applied" ? "active" : ""}`}
-          onClick={() => setActiveTab("applied")}
+        <button 
+          className={`tab-button ${activeTab === 'applied' ? 'active' : ''}`}
+          onClick={() => setActiveTab('applied')}
         >
           Applied Jobs ({jobs.length})
         </button>
-        <button
-          className={`tab-button ${activeTab === "saved" ? "active" : ""}`}
-          onClick={() => setActiveTab("saved")}
+        <button 
+          className={`tab-button ${activeTab === 'saved' ? 'active' : ''}`}
+          onClick={() => setActiveTab('saved')}
         >
           Saved Jobs ({savedJobs.length})
         </button>
       </div>
 
       <div className="dashboard-content">
-        {activeTab === "applied" && (
+        {activeTab === 'applied' && (
           <div className="applied-jobs-section">
             <div className="section-header">
               <h2>My Applications</h2>
@@ -155,7 +143,7 @@ const JobSeekerDashboard = () => {
                 </div>
                 <h3>No Applications Yet</h3>
                 <p>Start applying to jobs to see your applications here</p>
-                <Link to="/jobs" className="btn btn-primary">Browse Jobs</Link>
+                <a href="/jobs" className="btn btn-primary">Browse Jobs</a>
               </div>
             ) : (
               <div className="applications-grid">
@@ -164,7 +152,7 @@ const JobSeekerDashboard = () => {
                     <div className="application-header">
                       <div className="job-info">
                         <h3>{application.job?.title || "Job Title"}</h3>
-                        <p className="company-name">{getCompanyName(application.job)}</p>
+                        <p className="company-name">{application.job?.company || "Company"}</p>
                         <div className="job-meta">
                           <span className="location">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -175,30 +163,33 @@ const JobSeekerDashboard = () => {
                           </span>
                           <span className="salary">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303-.001-3.182s2.9-.879 4.006 0l.415.33" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303-.001-3.182s2.9-.879 4.006 0l.415.33M21 14.75V20a1 1 0 01-1 1v0a1 1 0 01-1-1v-5.25m18 0V20a1 1 0 01-1 1h0a1 1 0 01-1-1v-5.25" />
                             </svg>
-                            {formatSalary(application.job?.salary, "/yr")}
+                            {application.job?.salary ? `₹${Number(application.job.salary).toLocaleString()}/yr` : "Not disclosed"}
                           </span>
                         </div>
                       </div>
                       <div className="application-status">
-                        <span
+                        <span 
                           className="status-badge"
                           style={{ borderColor: getStatusColor(application.status), color: getStatusColor(application.status) }}
                         >
                           {getStatusText(application.status)}
                         </span>
                         <span className="applied-date">
-                          Applied on {application.applied_at ? new Date(application.applied_at).toLocaleDateString() : "N/A"}
+                          Applied on {application.applied_at ? new Date(application.applied_at).toLocaleDateString() : 'N/A'}
                         </span>
                       </div>
                     </div>
-
+                    
                     <div className="application-actions">
-                      <Link to={`/job/${application.job?.id}`} className="btn btn-outline">
+                      <a 
+                        href={`/job/${application.job?.id}`}
+                        className="btn btn-outline"
+                      >
                         View Job
-                      </Link>
-                      <button
+                      </a>
+                      <button 
                         className="btn btn-secondary"
                         onClick={() => handleDeleteApplication(application.id)}
                       >
@@ -212,7 +203,7 @@ const JobSeekerDashboard = () => {
           </div>
         )}
 
-        {activeTab === "saved" && (
+        {activeTab === 'saved' && (
           <div className="saved-jobs-section">
             <div className="section-header">
               <h2>Saved Jobs</h2>
@@ -228,36 +219,36 @@ const JobSeekerDashboard = () => {
                 </div>
                 <h3>No Saved Jobs</h3>
                 <p>Save jobs you're interested in to see them here</p>
-                <Link to="/jobs" className="btn btn-primary">Browse Jobs</Link>
+                <a href="/jobs" className="btn btn-primary">Browse Jobs</a>
               </div>
             ) : (
               <div className="saved-jobs-grid">
-                {savedJobs.map((bookmark) => (
-                  <div key={bookmark.id} className="saved-job-card">
+                {savedJobs.map((job) => (
+                  <div key={job.id} className="saved-job-card">
                     <div className="job-info">
-                      <h3>{bookmark.job?.title}</h3>
-                      <p className="company-name">{getCompanyName(bookmark.job)}</p>
+                      <h3>{job.title}</h3>
+                      <p className="company-name">{job.company}</p>
                       <div className="job-meta">
                         <span className="location">
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                           </svg>
-                          {bookmark.job?.location || "Location"}
+                          {job.location}
                         </span>
                         <span className="salary">
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303-.001-3.182s2.9-.879 4.006 0l.415.33" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303-.001-3.182s2.9-.879 4.006 0l.415.33M21 14.75V20a1 1 0 01-1 1v0a1 1 0 01-1-1v-5.25m18 0V20a1 1 0 01-1 1h0a1 1 0 01-1-1v-5.25" />
                           </svg>
-                          {formatSalary(bookmark.job?.salary, "/yr")}
+                          {job.salary ? `₹${Number(job.salary).toLocaleString()}/yr` : "Not disclosed"}
                         </span>
                       </div>
                     </div>
                     <div className="saved-job-actions">
-                      <Link to={`/job/${bookmark.job?.id}`} className="btn btn-primary">View Details</Link>
-                      <button
+                      <a href={`/job/${job.id}`} className="btn btn-primary">View Details</a>
+                      <button 
                         className="btn btn-secondary"
-                        onClick={() => handleUnsaveJob(bookmark.id)}
+                        onClick={() => handleUnsaveJob(job.id)}
                       >
                         Remove
                       </button>
