@@ -12,12 +12,11 @@ class ApplicationSerializer(serializers.ModelSerializer):
     # for writing (accepts job id from Postman)
     job = serializers.PrimaryKeyRelatedField(
         queryset=Job.objects.all(),
-        source='job',
         write_only=True
     )
 
     class Meta:
         model = Application
-        fields = ['__all__',]
+        fields = ['id', 'job', 'user', 'resume', 'applied_at', 'status']
         read_only_fields = ['id', 'user', 'applied_at', 'status']
         extra_kwargs = { 'resume': {'required': False} }

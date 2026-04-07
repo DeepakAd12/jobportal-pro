@@ -14,7 +14,6 @@ class BookmarkSerializer(serializers.ModelSerializer):
     job = JobSerializer(read_only=True)
     job = serializers.PrimaryKeyRelatedField(
         queryset=Job.objects.all(),
-        source='job',
         write_only=True
     )
 
