@@ -7,12 +7,13 @@ from utils.response import success_response
 from .models import Application
 from .serializers import ApplicationSerializer
 from rest_framework import serializers
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 class ApplicationViewSet(ModelViewSet):
 
     serializer_class = ApplicationSerializer
-
     permission_classes = [IsAuthenticated]
+    parser_classes = [FormParser,MultiPartParser]
 
     def get_queryset(self):
 
@@ -26,6 +27,7 @@ class ApplicationViewSet(ModelViewSet):
         return Application.objects.filter(user=user)
 
     def perform_create(self, serializer):
+        print("DATA: ", serializer.validated_data)
         user = self.request.user
         job = serializer.validated_data.get('job')
         if Application.objects.filter(user=user, job=job).exists():

@@ -105,7 +105,7 @@ export default function JobDetails() {
         setIsSaved(false);
         showToast("Job removed from saved", "info");
       } else {
-        const res = await api.post("jobs/bookmarks/", { job_id: job.id });
+        const res = await api.post("jobs/bookmarks/", { job: job.id });
         const createdBookmark = res.data?.data || res.data;
         setBookmarkId(createdBookmark.id);
         setIsSaved(true);

@@ -123,7 +123,7 @@ export default function Jobs() {
         await api.delete(`jobs/bookmarks/${bookmarkId}/`);
         setBookmarks((prev) => prev.filter((bookmark) => bookmark.id !== bookmarkId));
       } else {
-        const res = await api.post("jobs/bookmarks/", { job_id: jobId });
+        const res = await api.post("jobs/bookmarks/", {job: jobId });
         const createdBookmark = res.data?.data || res.data;
         setBookmarks((prev) => [...prev, createdBookmark]);
       }

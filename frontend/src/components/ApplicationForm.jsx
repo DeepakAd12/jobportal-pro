@@ -47,8 +47,11 @@ const ApplicationForm = ({ job, isOpen, onClose, onApply }) => {
 
     try {
       const formData = new FormData();
-      formData.append("job_id", job.id);
+      formData.append("job", job.id);
       formData.append("resume", resumeFile);
+      for (let pair of formData.entries()) {
+        console.log(pair[0]+ ': ' + pair[1]);
+      }
 
       await onApply(formData);
       handleClose();

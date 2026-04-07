@@ -61,7 +61,11 @@ class BookmarkViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Bookmark.objects.filter(user=self.request.user)
+        queryset = Bookmark.objects.filter(user=self.request.user).select_related('job', 'job__created_by')
+        job = self.request.query_params.get('job')
+        if job:
+            queryset = queryset.filter(job=job)
+        return queryset
 
     def perform_create(self, serializer):
         user = self.request.user

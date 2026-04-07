@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "https://jobportal-backend-i26p.onrender.com",
+  baseURL:"https://jobportal-backend-i26p.onrender.com/api/",
 });
 
 // Request interceptor to attach auth token
