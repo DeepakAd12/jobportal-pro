@@ -1,32 +1,53 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api";
+import { formatSalary, getCompanyName } from "../utils/jobUtils";
 import "../styles/home.css";
 
 export default function Home() {
   const navigate = useNavigate();
   const [featuredJobs, setFeaturedJobs] = useState([]);
+  const [bookmarks, setBookmarks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [bookmarkLoadingId, setBookmarkLoadingId] = useState(null);
+  const isLoggedIn = !!localStorage.getItem("token");
 
   useEffect(() => {
-    const fetchFeaturedJobs = () => {
+    const fetchFeaturedJobs = async () => {
       setLoading(true);
-      api.get("jobs/")
-        .then(res => {
-          const jobs = res.data.results || res.data;
-          setFeaturedJobs(jobs.slice(0, 6));
-        })
-        .catch(err => {
-          console.error("Failed to fetch jobs:", err);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+
+      try {
+        const res = await api.get("jobs/", { params: { limit: 6 } });
+        const jobs = res.data?.results || res.data || [];
+        setFeaturedJobs(jobs.slice(0, 6));
+      } catch (err) {
+        console.error("Failed to fetch jobs:", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchFeaturedJobs();
   }, []);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setBookmarks([]);
+      return;
+    }
+
+    const fetchBookmarks = async () => {
+      try {
+        const res = await api.get("jobs/bookmarks/");
+        setBookmarks(res.data?.results || res.data || []);
+      } catch (err) {
+        console.error("Failed to fetch bookmarks:", err);
+      }
+    };
+
+    fetchBookmarks();
+  }, [isLoggedIn]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -35,21 +56,51 @@ export default function Home() {
     }
   };
 
+  const bookmarkedJobIds = useMemo(
+    () => new Map(bookmarks.map((bookmark) => [bookmark.job?.id, bookmark.id])),
+    [bookmarks]
+  );
+
+  const toggleBookmark = async (jobId) => {
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
+
+    setBookmarkLoadingId(jobId);
+
+    try {
+      const bookmarkId = bookmarkedJobIds.get(jobId);
+
+      if (bookmarkId) {
+        await api.delete(`jobs/bookmarks/${bookmarkId}/`);
+        setBookmarks((prev) => prev.filter((bookmark) => bookmark.id !== bookmarkId));
+      } else {
+        const res = await api.post("jobs/bookmarks/", { job_id: jobId });
+        const createdBookmark = res.data?.data || res.data;
+        setBookmarks((prev) => [...prev, createdBookmark]);
+      }
+    } catch (err) {
+      console.error("Failed to update bookmark:", err);
+    } finally {
+      setBookmarkLoadingId(null);
+    }
+  };
+
   return (
     <div className="home">
-      {/* Hero Section */}
       <section className="hero">
         <div className="hero-content">
           <h1>Find Your Dream Job</h1>
           <p className="hero-subtitle">
             Discover thousands of job opportunities from top companies around the world
           </p>
-          
+
           <form className="search-form" onSubmit={handleSearch}>
             <div className="search-input-group">
               <input
                 type="text"
-                placeholder="Job title, keywords, or company"
+                placeholder="Job title or keywords"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="search-input"
@@ -78,7 +129,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        
+
         <div className="hero-image">
           <div className="hero-visual">
             <div className="visual-shape shape-1"></div>
@@ -88,14 +139,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Jobs */}
       <section className="featured-jobs">
         <div className="container">
           <div className="section-header">
             <h2>Featured Jobs</h2>
             <Link to="/jobs" className="view-all-link">View All Jobs</Link>
           </div>
-          
+
           {loading ? (
             <div className="jobs-loading">
               <div className="loading-spinner"></div>
@@ -103,13 +153,13 @@ export default function Home() {
             </div>
           ) : (
             <div className="jobs-grid">
-              {featuredJobs.map(job => (
+              {featuredJobs.map((job) => (
                 <div key={job.id} className="job-card">
                   <div className="job-card-header">
                     <h3>{job.title}</h3>
                   </div>
-                  <p className="job-company">{job.created_by?.username || job.created_by?.email || "Company Name"}</p>
-                  
+                  <p className="job-company">{getCompanyName(job)}</p>
+
                   <div className="job-details">
                     <span className="job-detail">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -118,17 +168,9 @@ export default function Home() {
                       </svg>
                       {job.location || "Remote"}
                     </span>
-                    <span className="job-detail">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {job.job_type || "Full-time"}
-                    </span>
                   </div>
 
-                  <p className="job-salary">
-                    {job.salary ? `₹${Number(job.salary).toLocaleString()}` : "Salary not disclosed"}
-                  </p>
+                  <p className="job-salary">{formatSalary(job.salary)}</p>
 
                   {job.description && (
                     <p className="job-description">{job.description}</p>
@@ -136,7 +178,14 @@ export default function Home() {
 
                   <div className="job-actions">
                     <Link to={`/job/${job.id}`} className="btn btn-primary">View Details</Link>
-                    <button className="btn btn-secondary">Save</button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => toggleBookmark(job.id)}
+                      disabled={bookmarkLoadingId === job.id}
+                    >
+                      {bookmarkLoadingId === job.id ? "Saving..." : bookmarkedJobIds.has(job.id) ? "Saved" : "Save"}
+                    </button>
                   </div>
                 </div>
               ))}
@@ -145,14 +194,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How It Works */}
       <section className="how-it-works">
         <div className="container">
           <div className="section-header">
             <h2>How It Works</h2>
             <p className="section-subtitle">Simple steps to find your perfect job</p>
           </div>
-          
+
           <div className="steps-grid">
             <div className="step-card">
               <div className="step-icon">
@@ -187,7 +235,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="cta-section">
         <div className="container">
           <div className="cta-content">

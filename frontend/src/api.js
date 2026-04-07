@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://jobportal-backend-i26p.onrender.com/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000/api",
 });
 
 // Request interceptor to attach auth token
@@ -26,6 +26,7 @@ api.interceptors.response.use(
       // Token expired or invalid
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+      window.dispatchEvent(new Event("auth-change"));
       window.location.href = "/login";
     }
     return Promise.reject(error);

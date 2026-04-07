@@ -1,113 +1,138 @@
-import { useEffect, useState, useMemo } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import api from "../api";
+import { formatSalary, getCompanyName } from "../utils/jobUtils";
 import "../styles/jobs.css";
+
+const DEFAULT_FILTERS = {
+  search: "",
+  location: "",
+  salary: "",
+};
 
 export default function Jobs() {
   const [jobs, setJobs] = useState([]);
+  const [bookmarks, setBookmarks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [bookmarkLoadingId, setBookmarkLoadingId] = useState(null);
   const [error, setError] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  
-  // Filter states
   const [filters, setFilters] = useState({
-    search: searchParams.get('search') || '',
-    location: searchParams.get('location') || '',
-    jobType: searchParams.get('jobType') || '',
-    experience: searchParams.get('experience') || '',
-    salary: searchParams.get('salary') || ''
+    search: searchParams.get("search") || "",
+    location: searchParams.get("location") || "",
+    salary: searchParams.get("salary") || "",
   });
 
- useEffect(() => {
-  const fetchJobs = () => {
-    setLoading(true);
-    setError(null);
+  const isLoggedIn = !!localStorage.getItem("token");
 
-    api.get("jobs/")
-      .then(res => {
-        console.log("FULL RESPONSE:", res.data);
+  useEffect(() => {
+    setFilters({
+      search: searchParams.get("search") || "",
+      location: searchParams.get("location") || "",
+      salary: searchParams.get("salary") || "",
+    });
+  }, [searchParams]);
 
-        const jobsData = res.data?.results || res.data || [];
+  useEffect(() => {
+    const fetchJobs = async () => {
+      setLoading(true);
+      setError(null);
 
-        console.log("EXTRACTED JOBS:", jobsData);
+      try {
+        const params = { limit: 50 };
 
-        setJobs(jobsData);
-      })
-      .catch(err => {
+        const search = searchParams.get("search");
+        const location = searchParams.get("location");
+        const salary = searchParams.get("salary");
+
+        if (search) params.search = search;
+        if (location) params.location = location;
+        if (salary) params.salary_min = salary;
+
+        const res = await api.get("jobs/", { params });
+        setJobs(res.data?.results || res.data || []);
+      } catch (err) {
         console.error("ERROR:", err);
         setError("Failed to load jobs");
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
-  };
+      }
+    };
 
-  fetchJobs();
-}, []);
+    fetchJobs();
+  }, [searchParams]);
 
-  // Apply filters
-const filteredJobs = useMemo(() => {
-  return jobs.filter(job => {
-    const searchLower = (filters.search || "").toLowerCase();
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setBookmarks([]);
+      return;
+    }
 
-    const matchesSearch =
-      !searchLower ||
-      (job.title && job.title.toLowerCase().includes(searchLower)) ||
-      (job.description && job.description.toLowerCase().includes(searchLower)) ||
-      (job.created_by?.username && job.created_by.username.toLowerCase().includes(searchLower));
+    const fetchBookmarks = async () => {
+      try {
+        const res = await api.get("jobs/bookmarks/");
+        setBookmarks(res.data?.results || res.data || []);
+      } catch (err) {
+        console.error("Failed to fetch bookmarks:", err);
+      }
+    };
 
-    const matchesLocation =
-      !filters.location ||
-      (job.location && job.location.toLowerCase().includes(filters.location.toLowerCase()));
+    fetchBookmarks();
+  }, [isLoggedIn]);
 
-    const matchesJobType =
-      !filters.jobType ||
-      (job.job_type && job.job_type === filters.jobType);
-
-    const matchesExperience =
-      !filters.experience ||
-      (job.experience && job.experience.toLowerCase().includes(filters.experience.toLowerCase()));
-
-    const matchesSalary =
-      !filters.salary ||
-      (job.salary && Number(job.salary) >= Number(filters.salary));
-
-    return (
-      matchesSearch &&
-      matchesLocation &&
-      matchesJobType &&
-      matchesExperience &&
-      matchesSalary
-    );
-  });
-}, [jobs, filters]);
+  const bookmarkedJobIds = useMemo(
+    () => new Map(bookmarks.map((bookmark) => [bookmark.job?.id, bookmark.id])),
+    [bookmarks]
+  );
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleClearFilters = () => {
-    setFilters({
-      search: '',
-      location: '',
-      jobType: '',
-      experience: '',
-      salary: ''
-    });
+    setFilters(DEFAULT_FILTERS);
+    setSearchParams(new URLSearchParams());
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // Update URL params
+
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
       if (value) params.set(key, value);
     });
     setSearchParams(params);
+  };
+
+  const toggleBookmark = async (jobId) => {
+    if (!isLoggedIn) {
+      window.location.href = "/login";
+      return;
+    }
+
+    setBookmarkLoadingId(jobId);
+
+    try {
+      const bookmarkId = bookmarkedJobIds.get(jobId);
+
+      if (bookmarkId) {
+        await api.delete(`jobs/bookmarks/${bookmarkId}/`);
+        setBookmarks((prev) => prev.filter((bookmark) => bookmark.id !== bookmarkId));
+      } else {
+        const res = await api.post("jobs/bookmarks/", { job_id: jobId });
+        const createdBookmark = res.data?.data || res.data;
+        setBookmarks((prev) => [...prev, createdBookmark]);
+      }
+    } catch (err) {
+      console.error("Failed to update bookmark:", err);
+      setError("Failed to update saved jobs");
+    } finally {
+      setBookmarkLoadingId(null);
+    }
   };
 
   if (loading) {
@@ -125,7 +150,7 @@ const filteredJobs = useMemo(() => {
     );
   }
 
-  if (error) {
+  if (error && jobs.length === 0) {
     return (
       <div className="jobs-page">
         <div className="jobs-header">
@@ -151,14 +176,13 @@ const filteredJobs = useMemo(() => {
         <p className="subtitle">Discover opportunities that match your skills and career goals</p>
       </div>
 
-      {/* Search and Filters */}
       <div className="filters-section">
         <form onSubmit={handleSearch} className="search-form">
           <div className="search-input-group">
             <input
               type="text"
               name="search"
-              placeholder="Job title, keywords, or company"
+              placeholder="Job title or keywords"
               value={filters.search}
               onChange={handleFilterChange}
               className="search-input"
@@ -186,39 +210,6 @@ const filteredJobs = useMemo(() => {
           </div>
 
           <div className="filter-group">
-            <label htmlFor="jobType">Job Type</label>
-            <select
-              id="jobType"
-              name="jobType"
-              value={filters.jobType}
-              onChange={handleFilterChange}
-            >
-              <option value="">All Types</option>
-              <option value="Full-time">Full-time</option>
-              <option value="Part-time">Part-time</option>
-              <option value="Contract">Contract</option>
-              <option value="Remote">Remote</option>
-              <option value="Internship">Internship</option>
-            </select>
-          </div>
-
-          <div className="filter-group">
-            <label htmlFor="experience">Experience Level</label>
-            <select
-              id="experience"
-              name="experience"
-              value={filters.experience}
-              onChange={handleFilterChange}
-            >
-              <option value="">All Levels</option>
-              <option value="Entry">Entry Level</option>
-              <option value="Mid">Mid Level</option>
-              <option value="Senior">Senior Level</option>
-              <option value="Lead">Lead/Manager</option>
-            </select>
-          </div>
-
-          <div className="filter-group">
             <label htmlFor="salary">Minimum Salary</label>
             <select
               id="salary"
@@ -227,26 +218,26 @@ const filteredJobs = useMemo(() => {
               onChange={handleFilterChange}
             >
               <option value="">No Minimum</option>
-              <option value="30000">₹30,000+</option>
-              <option value="50000">₹50,000+</option>
-              <option value="80000">₹80,000+</option>
-              <option value="100000">₹100,000+</option>
-              <option value="150000">₹150,000+</option>
+              <option value="30000">Rs 30,000+</option>
+              <option value="50000">Rs 50,000+</option>
+              <option value="80000">Rs 80,000+</option>
+              <option value="100000">Rs 100,000+</option>
+              <option value="150000">Rs 150,000+</option>
             </select>
           </div>
         </div>
 
         <div className="filters-actions">
-          <button onClick={handleClearFilters} className="btn btn-secondary">
+          <button type="button" onClick={handleClearFilters} className="btn btn-secondary">
             Clear Filters
           </button>
           <span className="results-count">
-            {filteredJobs.length} {filteredJobs.length === 1 ? 'job' : 'jobs'} found
+            {jobs.length} {jobs.length === 1 ? "job" : "jobs"} found
           </span>
         </div>
       </div>
 
-      {filteredJobs.length === 0 ? (
+      {jobs.length === 0 ? (
         <div className="no-jobs">
           <div className="no-jobs-icon">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -255,69 +246,52 @@ const filteredJobs = useMemo(() => {
           </div>
           <h3>No jobs found</h3>
           <p>Try adjusting your search criteria or check back later for new opportunities</p>
-          <button onClick={handleClearFilters} className="btn btn-primary">Clear Filters</button>
+          <button type="button" onClick={handleClearFilters} className="btn btn-primary">
+            Clear Filters
+          </button>
         </div>
       ) : (
         <div className="jobs-grid">
-          {filteredJobs.map(job => (
-            <div key={job.id} className="job-card">
-              <div className="job-card-header">
-                <h3>{job.title}</h3>
-                <span className={`job-badge ${job.job_type?.toLowerCase() || 'full-time'}`}>
-                  {job.job_type || "Full-time"}
-                </span>
-              </div>
-              <p className="job-company">{job.created_by?.username || job.created_by?.email || "Company Name"}</p>
-              
-              <div className="job-details">
-                <span className="job-detail">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                  </svg>
-                  {job.location || "Remote"}
-                </span>
-                <span className="job-detail">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  {job.job_type || "Full-time"}
-                </span>
-                {job.experience && (
+          {jobs.map((job) => {
+            const isSaved = bookmarkedJobIds.has(job.id);
+
+            return (
+              <div key={job.id} className="job-card">
+                <div className="job-card-header">
+                  <h3>{job.title}</h3>
+                </div>
+                <p className="job-company">{getCompanyName(job)}</p>
+
+                <div className="job-details">
                   <span className="job-detail">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                     </svg>
-                    {job.experience}
+                    {job.location || "Remote"}
                   </span>
-                )}
+                </div>
+
+                <p className="job-salary">{formatSalary(job.salary, "/yr")}</p>
+
+                {job.description && <p className="job-description">{job.description}</p>}
+
+                <div className="job-actions">
+                  <Link to={`/job/${job.id}`} className="btn btn-primary">
+                    View Details
+                  </Link>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => toggleBookmark(job.id)}
+                    disabled={bookmarkLoadingId === job.id}
+                  >
+                    {bookmarkLoadingId === job.id ? "Saving..." : isSaved ? "Saved" : "Save Job"}
+                  </button>
+                </div>
               </div>
-
-              <p className="job-salary">
-                {job.salary ? `₹${Number(job.salary).toLocaleString()}/yr` : "Salary not disclosed"}
-              </p>
-
-              {job.description && (
-                <p className="job-description">{job.description}</p>
-              )}
-
-              {(() => {
-                const skills = typeof job.skills === 'string' ? JSON.parse(job.skills) : (Array.isArray(job.skills) ? job.skills : []);
-                return skills.length > 0 && (
-                  <div className="job-skills">
-                    {skills.slice(0, 4).map((skill, index) => (
-                      <span key={index} className="skill-tag">{skill}</span>
-                    ))}
-                  </div>
-                );
-              })()}
-
-              <div className="job-actions">
-                <Link to={`/job/${job.id}`} className="btn btn-primary">View Details</Link>
-                <button className="btn btn-secondary">Save Job</button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

@@ -8,7 +8,7 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError() {
     return { hasError: true };
   }
 
@@ -53,7 +53,7 @@ class ErrorBoundary extends React.Component {
               </Link>
             </div>
 
-            {process.env.NODE_ENV === 'development' && this.state.errorInfo && (
+            {import.meta.env.DEV && this.state.errorInfo && (
               <details className="error-details">
                 <summary>Error Details (Development)</summary>
                 <pre>{this.state.errorInfo.componentStack}</pre>

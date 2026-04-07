@@ -1,159 +1,50 @@
-/* Form Styles - Professional Login Design */
 .form-container {
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - 72px);
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 40px 20px;
+  justify-content: center;
+  padding: 42px 20px 64px;
 }
 
 .form-card {
-  background: white;
-  padding: 40px;
-  border-radius: 16px;
   width: 100%;
-  max-width: 420px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  max-width: 460px;
+  padding: 36px 32px;
+  border-radius: 30px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(16px);
 }
 
 .form-card h2 {
-  margin: 0 0 8px;
-  color: #1a1f36;
+  margin-bottom: 8px;
   text-align: center;
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 2.25rem;
 }
 
-.form-card .form-subtitle {
+.form-subtitle {
+  margin-bottom: 28px;
   text-align: center;
-  color: #6b7280;
-  font-size: 14px;
-  margin-bottom: 32px;
+  color: var(--muted);
 }
 
 .form-group {
-  margin-bottom: 20px;
-}
-
-.form-card label {
-  display: block;
-  margin-bottom: 8px;
-  color: #374151;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.form-card input:not(.form-control) {
-  width: 100%;
-  padding: 14px 16px;
-  margin-bottom: 0;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 15px;
-  box-sizing: border-box;
-  transition: all 0.2s ease;
-  background: #f9fafb;
-}
-
-.form-card input:focus {
-  outline: none;
-  border-color: #2563eb;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.form-card input::placeholder {
-  color: #9ca3af;
-}
-
-.form-card input:disabled {
-  background: #f3f4f6;
-  cursor: not-allowed;
-}
-
-/* Error message in form */
-.form-card .error-message {
-  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-  color: #dc2626;
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  border: 1px solid #fecaca;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.form-card .error-message svg {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
+  margin-bottom: 18px;
 }
 
 .form-card button {
   width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
   margin-top: 8px;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
 }
 
-.form-card button:hover:not(:disabled) {
-  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
-  transform: translateY(-1px);
-}
-
-.form-card button:disabled {
-  background: #9ca3af;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-/* Form footer */
-.form-footer {
-  text-align: center;
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid #e5e7eb;
-}
-
-.form-footer p {
-  color: #6b7280;
-  font-size: 14px;
-  margin: 0;
-}
-
-.form-footer a {
-  color: #2563eb;
-  font-weight: 500;
-  text-decoration: none;
-}
-
-.form-footer a:hover {
-  text-decoration: underline;
-}
-
-/* Responsive */
 @media (max-width: 480px) {
   .form-container {
-    padding: 20px 16px;
+    padding: 26px 16px 48px;
   }
 
   .form-card {
-    padding: 32px 24px;
-  }
-
-  .form-card h2 {
-    font-size: 24px;
+    padding: 28px 22px;
+    border-radius: 24px;
   }
 }

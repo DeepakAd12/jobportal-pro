@@ -32,7 +32,7 @@ const ApplicationForm = ({ job, isOpen, onClose, onApply }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       showToast("Please fix the errors below", "error");
       return;
@@ -46,21 +46,14 @@ const ApplicationForm = ({ job, isOpen, onClose, onApply }) => {
     setIsSubmitting(true);
 
     try {
-      // Create FormData for file upload
       const formData = new FormData();
-      formData.append("job", job.id);
-      formData.append("full_name", values.fullName);
-      formData.append("email", values.email);
-      formData.append("phone", values.phone);
-      formData.append("cover_letter", values.coverLetter);
+      formData.append("job_id", job.id);
       formData.append("resume", resumeFile);
 
       await onApply(formData);
-      showToast("Application submitted successfully!", "success");
       handleClose();
     } catch (error) {
       console.error("Application submission failed:", error);
-      showToast("Failed to submit application. Please try again.", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -76,8 +69,7 @@ const ApplicationForm = ({ job, isOpen, onClose, onApply }) => {
     const file = e.target.files[0];
     setResumeFile(file);
     handleChange("resume", file);
-    
-    // Validate file
+
     const fileError = applicationFormValidation.resume[1](file);
     if (fileError) {
       setFieldError("resume", fileError);
@@ -103,7 +95,7 @@ const ApplicationForm = ({ job, isOpen, onClose, onApply }) => {
         <form onSubmit={handleSubmit} className="application-form">
           <div className="form-section">
             <h3>Personal Information</h3>
-            
+
             <FormInput
               label="Full Name"
               name="fullName"
@@ -146,7 +138,7 @@ const ApplicationForm = ({ job, isOpen, onClose, onApply }) => {
 
           <div className="form-section">
             <h3>Resume & Cover Letter</h3>
-            
+
             <div className="form-input">
               <label className="form-label">
                 Resume <span className="required">*</span>
@@ -157,7 +149,7 @@ const ApplicationForm = ({ job, isOpen, onClose, onApply }) => {
                   id="resume"
                   accept=".pdf,.doc,.docx"
                   onChange={handleFileChange}
-                  className={`file-input ${errors.resume && touched.resume ? 'has-error' : ''}`}
+                  className={`file-input ${errors.resume && touched.resume ? "has-error" : ""}`}
                 />
                 <label htmlFor="resume" className="file-input-label">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -165,7 +157,7 @@ const ApplicationForm = ({ job, isOpen, onClose, onApply }) => {
                   </svg>
                   {resumeFile ? resumeFile.name : "Choose PDF or DOC file"}
                 </label>
-                
+
                 {resumeFile && (
                   <div className="file-preview">
                     <span className="file-name">{resumeFile.name}</span>
@@ -174,7 +166,7 @@ const ApplicationForm = ({ job, isOpen, onClose, onApply }) => {
                     </span>
                   </div>
                 )}
-                
+
                 {errors.resume && touched.resume && (
                   <div className="error-message">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -197,7 +189,7 @@ const ApplicationForm = ({ job, isOpen, onClose, onApply }) => {
                 onChange={(e) => handleChange("coverLetter", e.target.value)}
                 onBlur={() => handleBlur("coverLetter")}
                 placeholder="Tell us why you're interested in this position and what makes you a great fit..."
-                className={`form-control ${errors.coverLetter && touched.coverLetter ? 'has-error' : ''}`}
+                className={`form-control ${errors.coverLetter && touched.coverLetter ? "has-error" : ""}`}
                 rows="6"
               />
             </div>
@@ -212,7 +204,7 @@ const ApplicationForm = ({ job, isOpen, onClose, onApply }) => {
               </div>
               <div className="job-summary-item">
                 <span className="summary-label">Company:</span>
-                <span className="summary-value">{job.company || "Not specified"}</span>
+                <span className="summary-value">{typeof job.created_by === "string" ? job.created_by : "Not specified"}</span>
               </div>
               <div className="job-summary-item">
                 <span className="summary-label">Location:</span>
@@ -221,7 +213,7 @@ const ApplicationForm = ({ job, isOpen, onClose, onApply }) => {
               <div className="job-summary-item">
                 <span className="summary-label">Salary:</span>
                 <span className="summary-value">
-                  {job.salary ? `₹${Number(job.salary).toLocaleString()}/yr` : "Not disclosed"}
+                  {job.salary ? `Rs ${Number(job.salary).toLocaleString()}/yr` : "Not disclosed"}
                 </span>
               </div>
             </div>
