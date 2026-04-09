@@ -43,16 +43,26 @@ Database
 📂 Project Structure
 
 job_portal/
+
 │
+
 ├── backend/
+
 │   ├── applications/
+
 │   ├── jobs/
+
 │   ├── accounts/
 │
+
 ├── frontend/
+
 │   ├── components/
+
 │   ├── pages/
+
 │
+
 └── media/ (ignored)
 
 ---
