@@ -7,8 +7,8 @@ A full-stack Job Portal web application where users can browse jobs, apply with 
 🌐 Live Demo
 
 Frontend- https://jobportal-pro.vercel.app/
+
 Backend-  https://jobportal-backend-i26p.onrender.com/swagger/
----
 
 ✨ Features
 
@@ -106,7 +106,7 @@ DEBUG=True
 🙌 Author
 
 Deepak Adhikari
-GitHub: https://github.com/your-username
+GitHub: https://github.com/DeepakAd12
 
 ---
 
