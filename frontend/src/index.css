@@ -1,29 +1,168 @@
-:root {
-  --bg: #f4ede1;
-  --bg-soft: #fbf7f1;
-  --bg-strong: #e8dcc7;
-  --surface: rgba(255, 251, 245, 0.92);
-  --surface-solid: #fffaf2;
-  --surface-alt: #f1e5d5;
-  --border: rgba(23, 42, 58, 0.12);
-  --border-strong: rgba(23, 42, 58, 0.2);
-  --text: #172a3a;
-  --muted: #5e6d7a;
-  --heading: #10202d;
-  --brand: #153f4d;
-  --brand-strong: #0d2f39;
-  --accent: #d56d49;
-  --accent-strong: #bb5835;
-  --success: #29795a;
-  --danger: #b34f3d;
-  --warning: #a8722d;
-  --shadow-sm: 0 10px 30px rgba(16, 32, 45, 0.08);
-  --shadow-md: 0 18px 45px rgba(16, 32, 45, 0.12);
-  --shadow-lg: 0 30px 70px rgba(16, 32, 45, 0.18);
-  --radius-sm: 12px;
-  --radius-md: 20px;
-  --radius-lg: 32px;
+/* Light Mode (Default) */
+:root,
+[data-theme="light"] {
+  /* Background & Surface */
+  --bg: #f8f9fb;
+  --bg-soft: #ffffff;
+  --bg-strong: #f0f2f7;
+  --surface: rgba(255, 255, 255, 0.95);
+  --surface-solid: #ffffff;
+  --surface-alt: #f5f7fa;
+  
+  /* Text & UI */
+  --text: #1a2332;
+  --text-secondary: #6b7d8e;
+  --heading: #0f1419;
+  --muted: #8a96a6;
+  
+  /* Brand & Accents */
+  --brand: #1e3a52;
+  --brand-strong: #142a3d;
+  --brand-soft: #2f5270;
+  --accent: #a855f7;
+  --accent-strong: #7c3aed;
+  --accent-soft: #c084fc;
+  
+  /* Semantic Colors */
+  --success: #10b981;
+  --success-light: #d1fae5;
+  --danger: #ef4444;
+  --danger-light: #fee2e2;
+  --warning: #f59e0b;
+  --warning-light: #fef3c7;
+  --info: #3b82f6;
+  --info-light: #dbeafe;
+  
+  /* Borders */
+  --border: rgba(26, 35, 50, 0.08);
+  --border-strong: rgba(26, 35, 50, 0.14);
+  
+  /* Shadows */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.14);
+  --shadow-xl: 0 24px 56px rgba(0, 0, 0, 0.18);
+  
+  /* Spacing Scale - Premium whitespace */
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-28: 28px;
+  --space-32: 32px;
+  --space-40: 40px;
+  --space-48: 48px;
+  --space-56: 56px;
+  --space-64: 64px;
+  
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 999px;
+  
+  /* Typography */
+  --font-body: "Trebuchet MS", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: "Georgia", "Times New Roman", serif;
+  
+  /* Container */
   --container: 1200px;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Background & Surface */
+    --bg: #0f1419;
+    --bg-soft: #1a2332;
+    --bg-strong: #252d38;
+    --surface: rgba(26, 35, 50, 0.8);
+    --surface-solid: #1a2332;
+    --surface-alt: #23323e;
+    
+    /* Text & UI */
+    --text: #e8ecf1;
+    --text-secondary: #9aa6b3;
+    --heading: #f5f8fc;
+    --muted: #6b7d8e;
+    
+    /* Brand & Accents */
+    --brand: #64b5f6;
+    --brand-strong: #90caf9;
+    --brand-soft: #42a5f5;
+    --accent: #a855f7;
+    --accent-strong: #d8b4fe;
+    --accent-soft: #c084fc;
+    
+    /* Semantic Colors */
+    --success: #34d399;
+    --success-light: #1f3a35;
+    --danger: #f87171;
+    --danger-light: #3f1f1f;
+    --warning: #fbbf24;
+    --warning-light: #3f2f1f;
+    --info: #60a5fa;
+    --info-light: #1f2f3f;
+    
+    /* Borders */
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.14);
+    
+    /* Shadows - Darker, softer */
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+    --shadow-xl: 0 24px 56px rgba(0, 0, 0, 0.7);
+  }
+}
+
+/* Dark mode via data-theme attribute */
+[data-theme="dark"] {
+  /* Background & Surface */
+  --bg: #0f1419;
+  --bg-soft: #1a2332;
+  --bg-strong: #252d38;
+  --surface: rgba(26, 35, 50, 0.8);
+  --surface-solid: #1a2332;
+  --surface-alt: #23323e;
+  
+  /* Text & UI */
+  --text: #e8ecf1;
+  --text-secondary: #9aa6b3;
+  --heading: #f5f8fc;
+  --muted: #6b7d8e;
+  
+  /* Brand & Accents */
+  --brand: #64b5f6;
+  --brand-strong: #90caf9;
+  --brand-soft: #42a5f5;
+  --accent: #a855f7;
+  --accent-strong: #d8b4fe;
+  --accent-soft: #c084fc;
+  
+  /* Semantic Colors */
+  --success: #34d399;
+  --success-light: #1f3a35;
+  --danger: #f87171;
+  --danger-light: #3f1f1f;
+  --warning: #fbbf24;
+  --warning-light: #3f2f1f;
+  --info: #60a5fa;
+  --info-light: #1f2f3f;
+  
+  /* Borders */
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  
+  /* Shadows - Darker, softer */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 24px 56px rgba(0, 0, 0, 0.7);
 }
 
 * {
@@ -37,16 +176,14 @@ html {
 }
 
 body {
-  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(213, 109, 73, 0.16), transparent 30%),
-    radial-gradient(circle at top right, rgba(21, 63, 77, 0.12), transparent 28%),
-    linear-gradient(180deg, #f8f1e7 0%, #f4ede1 48%, #efe5d6 100%);
+  font-family: var(--font-body);
+  background: var(--bg);
   min-height: 100vh;
   color: var(--text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #root {
@@ -77,9 +214,26 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-heading);
   color: var(--heading);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
+  font-weight: 700;
+}
+
+.label-primary {
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.label-secondary {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
 }
 
 .container {
@@ -92,63 +246,81 @@ h6 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 13px 20px;
-  border-radius: 999px;
+  gap: var(--space-8);
+  padding: var(--space-12) var(--space-20);
+  border-radius: var(--radius-full);
   border: 1px solid transparent;
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.01em;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: all 0.3s ease;
+  min-height: 44px;
+}
+
+.btn-sm {
+  min-height: 40px;
+  padding: var(--space-8) var(--space-14);
+  font-size: 0.875rem;
+}
+
+.btn-lg {
+  min-height: 48px;
+  padding: var(--space-12) var(--space-24);
 }
 
 .btn:hover:not(:disabled) {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0px);
 }
 
 .btn:disabled {
-  opacity: 0.65;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent) 0%, #e38f57 100%);
-  color: #fffaf5;
-  box-shadow: 0 14px 30px rgba(213, 109, 73, 0.28);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+  color: var(--bg);
+  box-shadow: 0 8px 20px rgba(0, 217, 255, 0.25);
+  font-weight: 700;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--accent-strong) 0%, #d97d4e 100%);
-  box-shadow: 0 18px 34px rgba(213, 109, 73, 0.35);
+  box-shadow: 0 12px 28px rgba(0, 217, 255, 0.35);
 }
 
 .btn-secondary {
-  background: rgba(255, 250, 242, 0.9);
-  color: var(--brand);
-  border-color: rgba(21, 63, 77, 0.18);
+  background: var(--surface);
+  color: var(--heading);
+  border-color: var(--border-strong);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #fff5ea;
-  border-color: rgba(21, 63, 77, 0.28);
+  background: var(--bg-strong);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .btn-outline {
   background: transparent;
-  color: var(--brand);
-  border-color: rgba(21, 63, 77, 0.24);
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 .btn-outline:hover:not(:disabled) {
-  background: rgba(21, 63, 77, 0.08);
+  background: rgba(0, 217, 255, 0.08);
 }
 
 .card-surface {
   background: var(--surface);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
 }
 
 ::-webkit-scrollbar {
@@ -157,37 +329,56 @@ h6 {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 250, 242, 0.8);
+  background: var(--bg-strong);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(21, 63, 77, 0.24);
-  border-radius: 999px;
+  background: var(--border-strong);
+  border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(21, 63, 77, 0.36);
+  background: rgba(0, 217, 255, 0.6);
 }
 
 ::selection {
-  background: rgba(213, 109, 73, 0.3);
+  background: rgba(0, 217, 255, 0.25);
   color: var(--heading);
 }
 
 :focus-visible {
-  outline: 3px solid rgba(213, 109, 73, 0.45);
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(8px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -197,8 +388,47 @@ h6 {
   }
 }
 
+/* Responsive Breakpoints */
+
+/* Small phones (320px - 480px) */
+@media (max-width: 480px) {
+  :root {
+    --space-24: 16px;
+    --space-32: 24px;
+  }
+  
+  .container {
+    padding: 0 12px;
+  }
+  
+  h1 {
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+  }
+  
+  h2 {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+  }
+  
+  h3 {
+    font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+  }
+}
+
+/* Tablets and larger phones (481px - 768px) */
 @media (max-width: 768px) {
   .container {
     padding: 0 16px;
+  }
+}
+
+/* Large tablets and desktops (769px - 1024px) */
+@media (max-width: 1024px) {
+  
+}
+
+/* Extra large screens (1025px+) */
+@media (min-width: 1025px) {
+  .container {
+    padding: 0 32px;
   }
 }

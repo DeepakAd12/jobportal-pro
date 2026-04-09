@@ -3,8 +3,9 @@ import { useToast } from "./ToastContainer";
 import { useFormValidation, applicationFormValidation } from "../hooks/useFormValidation";
 import FormInput from "./FormInput";
 import "../styles/application-form.css";
+import api from "../api";
 
-const ApplicationForm = ({ job, isOpen, onClose, onApply }) => {
+const ApplicationForm = ({ job, isOpen, onClose }) => {
   const { showToast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resumeFile, setResumeFile] = useState(null);
@@ -13,7 +14,6 @@ const ApplicationForm = ({ job, isOpen, onClose, onApply }) => {
     values,
     errors,
     touched,
-    isValid,
     handleChange,
     handleBlur,
     validateForm,
@@ -31,36 +31,49 @@ const ApplicationForm = ({ job, isOpen, onClose, onApply }) => {
   );
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!validateForm()) {
-      showToast("Please fix the errors below", "error");
-      return;
-    }
+  console.log("JOB ID:", job.id);
 
-    if (!resumeFile) {
-      setFieldError("resume", "Please upload your resume");
-      return;
-    }
+  if (!validateForm()) {
+    showToast("Please fix the errors", "error");
+    return;
+  }
 
-    setIsSubmitting(true);
+  if (!resumeFile) {
+    setFieldError("resume", "Please upload your resume");
+    return;
+  }
 
-    try {
-      const formData = new FormData();
-      formData.append("job", job.id);
-      formData.append("resume", resumeFile);
-      for (let pair of formData.entries()) {
-        console.log(pair[0]+ ': ' + pair[1]);
-      }
+  setIsSubmitting(true);
 
-      await onApply(formData);
-      handleClose();
-    } catch (error) {
-      console.error("Application submission failed:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  try {
+    const formData = new FormData();
+    formData.append("job_id", job.id);
+    formData.append("resume", resumeFile);
+
+    await api.post("applications/", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    showToast("Application submitted successfully", "success");
+
+  } catch (error) {
+    console.error(error);
+
+    const message =
+      error.response?.data?.detail ||
+      error.response?.data ||
+      "Something went wrong";
+
+    showToast(message, "error");
+
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const handleClose = () => {
     resetForm();
@@ -234,7 +247,7 @@ const ApplicationForm = ({ job, isOpen, onClose, onApply }) => {
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={isSubmitting || !isValid}
+              disabled={isSubmitting}
             >
               {isSubmitting ? (
                 <>

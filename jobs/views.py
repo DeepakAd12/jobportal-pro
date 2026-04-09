@@ -30,7 +30,7 @@ class JobViewSet(ModelViewSet):
 
     def get_queryset(self):
 
-        queryset = Job.objects.all()
+        queryset = Job.objects.select_related('created_by').all()
 
         search = self.request.query_params.get('search')
         location = self.request.query_params.get('location')

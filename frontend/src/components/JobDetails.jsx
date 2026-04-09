@@ -4,7 +4,7 @@ import { useToast } from "./ToastContainer";
 import ApplicationForm from "./ApplicationForm";
 import LoadingSpinner from "./LoadingSpinner";
 import EmptyState from "./EmptyState";
-import api from "../api";
+import api, { togglemarkBookmark } from "../api";
 import { formatSalary, getCompanyName } from "../utils/jobUtils";
 import "../styles/job-details.css";
 
@@ -17,8 +17,8 @@ export default function JobDetails() {
   const [isSaved, setIsSaved] = useState(false);
   const [bookmarkId, setBookmarkId] = useState(null);
   const [showApplicationForm, setShowApplicationForm] = useState(false);
-  const [isApplying, setIsApplying] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [ setBookmarks] = useState([]);
 
   useEffect(() => {
     const fetchJob = async () => {
@@ -71,7 +71,6 @@ export default function JobDetails() {
   };
 
   const handleApplicationSubmit = async (formData) => {
-    setIsApplying(true);
     try {
       await api.post("applications/", formData);
       showToast("Application submitted successfully!", "success");
@@ -84,8 +83,6 @@ export default function JobDetails() {
         showToast("Failed to submit application. Please try again.", "error");
       }
       throw err;
-    } finally {
-      setIsApplying(false);
     }
   };
 
@@ -105,9 +102,9 @@ export default function JobDetails() {
         setIsSaved(false);
         showToast("Job removed from saved", "info");
       } else {
-        const res = await api.post("jobs/bookmarks/", { job: job.id });
+        const res = await togglemarkBookmark(job.id);
         const createdBookmark = res.data?.data || res.data;
-        setBookmarkId(createdBookmark.id);
+        setBookmarks((prev) => [...prev, createdBookmark]);
         setIsSaved(true);
         showToast("Job saved successfully", "info");
       }
@@ -306,22 +303,6 @@ export default function JobDetails() {
             ) : (
               <p className="no-description">No description available for this job.</p>
             )}
-          </div>
-
-          <div className="job-actions-bottom">
-            <button
-              onClick={handleSave}
-              className={`btn ${isSaved ? "btn-secondary" : "btn-outline"}`}
-              disabled={isSaving}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
-              </svg>
-              {isSaving ? "Saving..." : isSaved ? "Saved" : "Save Job"}
-            </button>
-            <button onClick={handleApply} className="btn btn-primary" disabled={isApplying}>
-              {isApplying ? "Applying..." : "Apply Now"}
-            </button>
           </div>
         </div>
       </div>

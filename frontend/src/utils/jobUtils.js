@@ -1,4 +1,8 @@
 export function getCompanyName(jobOrApplicationJob) {
+  if (typeof jobOrApplicationJob?.company === "string" && jobOrApplicationJob.company.trim()) {
+    return jobOrApplicationJob.company;
+  }
+
   const creator = jobOrApplicationJob?.created_by;
 
   if (typeof creator === "string" && creator.trim()) {
@@ -13,7 +17,7 @@ export function getCompanyName(jobOrApplicationJob) {
     return creator.email;
   }
 
-  return "Company Name";
+  return "Unknown Company";
 }
 
 export function formatSalary(salary, suffix = "") {

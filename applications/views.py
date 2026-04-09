@@ -27,12 +27,20 @@ class ApplicationViewSet(ModelViewSet):
         return Application.objects.filter(user=user)
 
     def perform_create(self, serializer):
-        print("DATA: ", serializer.validated_data)
         user = self.request.user
         job = serializer.validated_data.get('job')
+
+        print("USER: ", user)
+        print("JOB: ", job)
+
         if Application.objects.filter(user=user, job=job).exists():
          raise serializers.ValidationError("You already applied to this job")
-        serializer.save(user=user)
+        
+        if not job:
+            raise serializers.ValidationError("Job is required")
+        
+        
+        serializer.save(user=self.request.user)
         from utils.response import success_response
 
     def create(self, request, *args, **kwargs):

@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../api";
 import { formatSalary, getCompanyName } from "../utils/jobUtils";
 import "../styles/home.css";
+import "../styles/jobs.css";
+import { toggleBookmark as apitoggleBookmark} from "../api";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -76,7 +78,8 @@ export default function Home() {
         await api.delete(`jobs/bookmarks/${bookmarkId}/`);
         setBookmarks((prev) => prev.filter((bookmark) => bookmark.id !== bookmarkId));
       } else {
-        const res = await api.post("jobs/bookmarks/", {job: jobId });
+        const res = await apitoggleBookmark(jobId);
+
         const createdBookmark = res.data?.data || res.data;
         setBookmarks((prev) => [...prev, createdBookmark]);
       }
@@ -91,9 +94,9 @@ export default function Home() {
     <div className="home">
       <section className="hero">
         <div className="hero-content">
-          <h1>Find Your Dream Job</h1>
+          <h1>Your Next Opportunity Awaits</h1>
           <p className="hero-subtitle">
-            Discover thousands of job opportunities from top companies around the world
+            Find the perfect job match from 50K+ openings
           </p>
 
           <form className="search-form" onSubmit={handleSearch}>
@@ -197,8 +200,8 @@ export default function Home() {
       <section className="how-it-works">
         <div className="container">
           <div className="section-header">
-            <h2>How It Works</h2>
-            <p className="section-subtitle">Simple steps to find your perfect job</p>
+            <h2>Get Hired in 3 Steps</h2>
+            <p className="section-subtitle">Quick & easy process to land your dream role</p>
           </div>
 
           <div className="steps-grid">
@@ -209,7 +212,7 @@ export default function Home() {
                 </svg>
               </div>
               <h3>Create Profile</h3>
-              <p>Sign up and create your professional profile with your skills and experience</p>
+              <p>Build your professional profile in minutes</p>
             </div>
 
             <div className="step-card">
@@ -219,7 +222,7 @@ export default function Home() {
                 </svg>
               </div>
               <h3>Search Jobs</h3>
-              <p>Browse through thousands of job listings and find opportunities that match your skills</p>
+              <p>Explore 50K+ jobs tailored to your skills</p>
             </div>
 
             <div className="step-card">
@@ -229,7 +232,7 @@ export default function Home() {
                 </svg>
               </div>
               <h3>Apply & Get Hired</h3>
-              <p>Apply to jobs and track your applications. Get hired for your dream position!</p>
+              <p>Apply instantly and track your progress</p>
             </div>
           </div>
         </div>
@@ -238,8 +241,8 @@ export default function Home() {
       <section className="cta-section">
         <div className="container">
           <div className="cta-content">
-            <h2>Ready to Find Your Next Opportunity?</h2>
-            <p>Join thousands of professionals who found their dream jobs through our platform</p>
+            <h2>Ready to Start Your Journey?</h2>
+            <p>Join thousands landing their dream jobs every month</p>
             <div className="cta-buttons">
               <Link to="/register" className="btn btn-primary btn-large">Get Started</Link>
               <Link to="/jobs" className="btn btn-secondary btn-large">Browse Jobs</Link>

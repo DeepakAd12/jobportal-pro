@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect,  useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import api from "../api";
 import { formatSalary, getCompanyName } from "../utils/jobUtils";
 import "../styles/jobs.css";
+import { toggleBookmark as apiToggleBookmark } from "../api";
 
 const DEFAULT_FILTERS = {
   search: "",
@@ -13,8 +14,8 @@ const DEFAULT_FILTERS = {
 export default function Jobs() {
   const [jobs, setJobs] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
+  
   const [loading, setLoading] = useState(true);
-  const [bookmarkLoadingId, setBookmarkLoadingId] = useState(null);
   const [error, setError] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useState({
@@ -80,10 +81,9 @@ export default function Jobs() {
     fetchBookmarks();
   }, [isLoggedIn]);
 
-  const bookmarkedJobIds = useMemo(
-    () => new Map(bookmarks.map((bookmark) => [bookmark.job?.id, bookmark.id])),
-    [bookmarks]
-  );
+
+  const isInitialLoad = loading && jobs.length === 0;
+  const isRefreshing = loading && jobs.length > 0;
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -91,6 +91,24 @@ export default function Jobs() {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const toggleBookmark = async (jobId)=> {
+    try {
+      const existingBookmark = bookmarks.find((bookmark) => bookmark.job?.id === jobId);
+      
+      if (existingBookmark) {
+        await api.delete(`jobs/bookmarks/${existingBookmark.id}/`);
+        setBookmarks((prev) => prev.filter((bookmark) => bookmark.id !== existingBookmark.id));}
+      else {
+        const res = await apiToggleBookmark(jobId);
+        const newBookmark = res.data?.data || res.data;
+        setBookmarks((prev) => [...prev, newBookmark]);
+      }
+    }
+      catch (err) {
+        console.error("bookmark error:", err);
+      }
   };
 
   const handleClearFilters = () => {
@@ -108,34 +126,7 @@ export default function Jobs() {
     setSearchParams(params);
   };
 
-  const toggleBookmark = async (jobId) => {
-    if (!isLoggedIn) {
-      window.location.href = "/login";
-      return;
-    }
-
-    setBookmarkLoadingId(jobId);
-
-    try {
-      const bookmarkId = bookmarkedJobIds.get(jobId);
-
-      if (bookmarkId) {
-        await api.delete(`jobs/bookmarks/${bookmarkId}/`);
-        setBookmarks((prev) => prev.filter((bookmark) => bookmark.id !== bookmarkId));
-      } else {
-        const res = await api.post("jobs/bookmarks/", {job: jobId });
-        const createdBookmark = res.data?.data || res.data;
-        setBookmarks((prev) => [...prev, createdBookmark]);
-      }
-    } catch (err) {
-      console.error("Failed to update bookmark:", err);
-      setError("Failed to update saved jobs");
-    } finally {
-      setBookmarkLoadingId(null);
-    }
-  };
-
-  if (loading) {
+  if (isInitialLoad) {
     return (
       <div className="jobs-page">
         <div className="jobs-header">
@@ -174,6 +165,11 @@ export default function Jobs() {
       <div className="jobs-header">
         <h1>Find Your Perfect Job</h1>
         <p className="subtitle">Discover opportunities that match your skills and career goals</p>
+        {isRefreshing && (
+          <div className="jobs-refreshing">
+            <span>Updating jobs...</span>
+          </div>
+        )}
       </div>
 
       <div className="filters-section">
@@ -253,15 +249,26 @@ export default function Jobs() {
       ) : (
         <div className="jobs-grid">
           {jobs.map((job) => {
-            const isSaved = bookmarkedJobIds.has(job.id);
-
+            const isSaved = bookmarks.some((bookmark) => bookmark.job?.id === job.id);
+           
             return (
               <div key={job.id} className="job-card">
                 <div className="job-card-header">
-                  <h3>{job.title}</h3>
-                </div>
-                <p className="job-company">{getCompanyName(job)}</p>
+                  <div>
+                    <h3>{job.title}</h3>
+                    <p className="job-company">{getCompanyName(job)}</p>
+                  </div>
 
+                  <div className="job-card-actions">
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={() => toggleBookmark(job.id)}
+                    >
+                      {isSaved ? "Saved" : "Save Job"}
+                    </button>
+                  </div>
+                </div>
                 <div className="job-details">
                   <span className="job-detail">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -280,14 +287,8 @@ export default function Jobs() {
                   <Link to={`/job/${job.id}`} className="btn btn-primary">
                     View Details
                   </Link>
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => toggleBookmark(job.id)}
-                    disabled={bookmarkLoadingId === job.id}
-                  >
-                    {bookmarkLoadingId === job.id ? "Saving..." : isSaved ? "Saved" : "Save Job"}
-                  </button>
+              
+                  
                 </div>
               </div>
             );

@@ -34,3 +34,15 @@ api.interceptors.response.use(
 );
 
 export default api;
+export const togglemarkBookmark =  (jobId) => {
+  return api.post("jobs/bookmarks/", { job_id: jobId });
+  }
+export const toggleBookmark = async (jobId) => {
+  try {
+    const res = await api.post("jobs/bookmarks/", { job_id: jobId });
+    return res;
+  } catch (error) {
+    console.error("Failed to toggle bookmark:", error);
+    throw error
+  };
+}

@@ -12,12 +12,13 @@ class JobSerializer(serializers.ModelSerializer):
 
 class BookmarkSerializer(serializers.ModelSerializer):
     job = JobSerializer(read_only=True)
-    job = serializers.PrimaryKeyRelatedField(
+    job_id = serializers.PrimaryKeyRelatedField(
         queryset=Job.objects.all(),
+        source='job',
         write_only=True
     )
 
     class Meta:
         model = Bookmark
-        fields = ['id', 'job', 'job', 'user', 'created_at']
+        fields = ['id', 'job', 'job_id', 'user', 'created_at']
         read_only_fields = ['user']

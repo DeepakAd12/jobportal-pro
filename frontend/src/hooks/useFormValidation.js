@@ -35,29 +35,15 @@ export const useFormValidation = (initialState = {}, validationRules = {}) => {
   }, [values, validateField, validationRules]);
 
   const handleChange = useCallback((name, value) => {
-  setValues(prev => {
-    const updatedValues = { ...prev, [name]: value };
-
-    // validate field
+    setValues(prev => ({ ...prev, [name]: value }));
+    
+    // Validate field immediately
     const error = validateField(name, value);
-
     setErrors(prevErrors => ({
       ...prevErrors,
       [name]: error
     }));
-
-    // validate full form
-    let formIsValid = true;
-    Object.keys(validationRules).forEach(field => {
-      const err = validateField(field, updatedValues[field]);
-      if (err) formIsValid = false;
-    });
-
-    setIsValid(formIsValid);
-
-    return updatedValues;
-  });
-}, [validateField, validationRules]);
+  }, [validateField]);
 
   const handleBlur = useCallback((name) => {
     setTouched(prev => ({ ...prev, [name]: true }));

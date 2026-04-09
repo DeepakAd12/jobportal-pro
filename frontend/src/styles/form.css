@@ -1,50 +1,135 @@
 .form-container {
   min-height: calc(100vh - 72px);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 42px 20px 64px;
+  padding: 0;
+  background: var(--bg);
+}
+
+.form-header {
+  width: 100%;
+  padding: 70px var(--space-24) var(--space-44);
+  text-align: center;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent-strong) 0%, var(--accent) 50%, var(--accent-soft) 100%);
+}
+
+.form-header h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: var(--space-8);
+  color: #fff;
+  font-weight: 700;
+}
+
+.form-header p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.05rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--space-48) var(--space-20) 64px;
 }
 
 .form-card {
   width: 100%;
   max-width: 460px;
-  padding: 36px 32px;
-  border-radius: 30px;
+  padding: var(--space-36) var(--space-32);
+  border-radius: var(--radius-xl);
   background: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-md);
-  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
 }
 
 .form-card h2 {
-  margin-bottom: 8px;
+  margin-bottom: var(--space-8);
   text-align: center;
-  font-size: 2.25rem;
+  font-size: clamp(1.8rem, 5vw, 2.25rem);
+  color: var(--heading);
+  font-weight: 700;
 }
 
 .form-subtitle {
-  margin-bottom: 28px;
+  margin-bottom: var(--space-28);
   text-align: center;
-  color: var(--muted);
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .form-group {
-  margin-bottom: 18px;
+  margin-bottom: var(--space-20);
 }
 
 .form-card button {
   width: 100%;
-  margin-top: 8px;
+  margin-top: var(--space-8);
 }
 
+.form-link {
+  text-align: center;
+  margin-top: var(--space-20);
+  color: var(--text-secondary);
+}
+
+.form-link a {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.form-link a:hover {
+  color: var(--accent-strong);
+  text-decoration: underline;
+}
+
+/* Small phones (320px - 480px) */
 @media (max-width: 480px) {
+  .form-header {
+    padding: 50px var(--space-16) var(--space-32);
+  }
+
+  .form-header h2 {
+    font-size: 1.8rem;
+  }
+
   .form-container {
-    padding: 26px 16px 48px;
+    padding: var(--space-24) var(--space-12) 48px;
   }
 
   .form-card {
-    padding: 28px 22px;
-    border-radius: 24px;
+    padding: var(--space-28) var(--space-20);
+    border-radius: var(--radius-lg);
+  }
+
+  .form-card h2 {
+    font-size: 1.6rem;
+  }
+
+  .form-subtitle {
+    font-size: 0.95rem;
+    margin-bottom: var(--space-24);
+  }
+}
+
+/* Tablets (481px+) */
+@media (min-width: 481px) {
+  .form-header {
+    padding: 70px var(--space-24) var(--space-44);
+  }
+
+  .form-container {
+    padding: 0 var(--space-24) 64px;
   }
 }

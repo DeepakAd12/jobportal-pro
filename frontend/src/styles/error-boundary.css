@@ -3,30 +3,31 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 2rem;
+  background: linear-gradient(135deg, var(--brand-strong) 0%, var(--brand) 100%);
+  padding: var(--space-32);
 }
 
 .error-boundary-content {
-  background: white;
-  border-radius: 16px;
-  padding: 3rem;
+  background: var(--surface-solid);
+  border-radius: var(--radius-xl);
+  padding: var(--space-48);
   text-align: center;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-xl);
   max-width: 600px;
   width: 100%;
+  border: 1px solid var(--border);
 }
 
 .error-icon {
   width: 80px;
   height: 80px;
-  background: #fee2e2;
+  background: rgba(239, 68, 68, 0.1);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 2rem;
-  color: #ef4444;
+  margin: 0 auto var(--space-32);
+  color: var(--danger);
 }
 
 .error-icon svg {
@@ -37,65 +38,68 @@
 .error-boundary-content h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 1rem;
+  color: var(--heading);
+  margin-bottom: var(--space-16);
 }
 
 .error-message {
   font-size: 1.1rem;
-  color: #6b7280;
+  color: var(--text-secondary);
   line-height: 1.6;
-  margin-bottom: 2.5rem;
+  margin-bottom: var(--space-32);
 }
 
 .error-actions {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-16);
   justify-content: center;
   flex-wrap: wrap;
-  margin-bottom: 2rem;
 }
 
 .error-actions .btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
+  padding: var(--space-12) var(--space-20);
+  border-radius: var(--radius-full);
+  font-weight: 700;
   text-decoration: none;
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  min-height: 48px;
 }
 
 .error-actions .btn-primary {
-  background: #3b82f6;
-  color: white;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(0, 217, 255, 0.25);
 }
 
 .error-actions .btn-primary:hover {
-  background: #2563eb;
+  box-shadow: 0 12px 28px rgba(0, 217, 255, 0.35);
   transform: translateY(-2px);
 }
 
 .error-actions .btn-secondary {
-  background: #64748b;
-  color: white;
+  background: var(--bg-soft);
+  color: var(--heading);
+  border: 1px solid var(--border-strong);
 }
 
 .error-actions .btn-secondary:hover {
-  background: #475569;
+  background: var(--bg-strong);
+  border-color: var(--accent);
+  color: var(--accent);
   transform: translateY(-2px);
 }
 
 .error-actions .btn-outline {
   background: transparent;
-  color: #3b82f6;
-  border: 2px solid #3b82f6;
+  color: var(--accent);
+  border: 1px solid var(--accent);
 }
 
 .error-actions .btn-outline:hover {
-  background: #3b82f6;
-  color: white;
+  background: rgba(0, 217, 255, 0.08);
   transform: translateY(-2px);
 }
 
